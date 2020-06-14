@@ -1,6 +1,6 @@
 {
 	"name": "tsv-json",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"description": "Convert between TSV and JSON (`string[][]`)",
 	"license": "MIT",
 	"repository": "papb/tsv-json",
