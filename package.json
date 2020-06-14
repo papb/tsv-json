@@ -1,0 +1,67 @@
+{
+	"name": "tsv-json",
+	"version": "0.0.0",
+	"description": "Convert between TSV and JSON (`string[][]`)",
+	"license": "MIT",
+	"repository": "papb/tsv-json",
+	"author": {
+		"name": "Pedro Augusto de Paula Barbosa",
+		"email": "papb1996@gmail.com"
+	},
+	"engines": {
+		"node": ">=10"
+	},
+	"scripts": {
+		"build": "del-cli dist && tsc",
+		"release": "npm run build && np --no-2fa && npm pack && echo Please put the generated .tgz as a release asset on GitHub",
+		"test": "npm run build && xo && ava",
+		"lint": "npm run build && xo",
+		"ava": "npm run build && ava"
+	},
+	"main": "dist/source",
+	"types": "dist/source",
+	"files": [
+		"dist/source"
+	],
+	"devDependencies": {
+		"@ava/typescript": "^1",
+		"@types/node": "^13",
+		"ava": "^3",
+		"del-cli": "^3",
+		"np": "https://github.com/pixelastic/np/tarball/c3ab2e3b053c7da0ce40a572ca1616273ac080f8",
+		"source-map-support": "*",
+		"typescript": "~3.9",
+		"xo": "*"
+	},
+	"ava": {
+		"verbose": true,
+		"require": [
+			"source-map-support/register"
+		],
+		"typescript": {
+			"rewritePaths": {
+				"source/": "dist/source/",
+				"test/": "dist/test/"
+			}
+		}
+	},
+	"xo": {
+		"ignore": [
+			"**/*.js"
+		],
+		"rules": {
+			"@typescript-eslint/prefer-readonly-parameter-types": "off",
+			"unicorn/prevent-abbreviations": "off",
+			"unicorn/no-for-loop": "off",
+			"ava/no-ignored-test-files": "off",
+			"linebreak-style": [
+				"error",
+				"unix"
+			],
+			"object-curly-spacing": [
+				"error",
+				"always"
+			]
+		}
+	}
+}
