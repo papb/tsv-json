@@ -36,6 +36,12 @@ Handles tabs, newlines and double-quotes correctly.
 
 Asserts the input is of the expected type (`string[][]` for `json2tsv`, `string` for `tsv2json`).
 
+
+## Related
+
+* [tsv-json-cli](https://github.com/papb/tsv-json-cli) - CLI for this module
+
+
 ## License
 
 MIT © [Pedro Augusto de Paula Barbosa](https://github.com/papb)
