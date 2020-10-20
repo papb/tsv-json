@@ -13,9 +13,10 @@
 	},
 	"scripts": {
 		"build": "del-cli dist && tsc",
-		"release": "npm run build && np --no-2fa && npm pack && echo Please put the generated .tgz as a release asset on GitHub",
+		"prepack": "npm run build",
+		"release": "npm run build && np --no-yarn --no-2fa --no-cleanup",
 		"test": "npm run build && xo && ava",
-		"lint": "npm run build && xo",
+		"lint": "tsc --noEmit && xo",
 		"ava": "npm run build && ava"
 	},
 	"main": "dist/source",
@@ -24,14 +25,14 @@
 		"dist/source"
 	],
 	"devDependencies": {
-		"@ava/typescript": "^1",
-		"@types/node": "^13",
-		"ava": "^3",
-		"del-cli": "^3",
-		"np": "https://github.com/pixelastic/np/tarball/c3ab2e3b053c7da0ce40a572ca1616273ac080f8",
-		"source-map-support": "*",
-		"typescript": "~3.9",
-		"xo": "*"
+		"@ava/typescript": "^1.1.1",
+		"@types/node": "^10.17.40",
+		"ava": "^3.13.0",
+		"del-cli": "^3.0.1",
+		"np": "^6.5.0",
+		"source-map-support": "^0.5.19",
+		"typescript": "^4.0.3",
+		"xo": "^0.34.1"
 	},
 	"ava": {
 		"verbose": true,
@@ -46,14 +47,7 @@
 		}
 	},
 	"xo": {
-		"ignore": [
-			"**/*.js"
-		],
 		"rules": {
-			"@typescript-eslint/prefer-readonly-parameter-types": "off",
-			"unicorn/prevent-abbreviations": "off",
-			"unicorn/no-for-loop": "off",
-			"ava/no-ignored-test-files": "off",
 			"linebreak-style": [
 				"error",
 				"unix"

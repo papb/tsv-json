@@ -1,15 +1,15 @@
-function getInexistentSubstring(str: string): string {
+function getInexistentSubstring(string: string): string {
 	const chunk = '§¬¢£#';
 	let result = `!${chunk}!`;
 
-	while (str.includes(result)) {
+	while (string.includes(result)) {
 		result = `${result}${chunk}!`;
 	}
 
 	return result;
 }
 
-export function tsv2json(tsv: any): string[][] {
+export function tsv2json(tsv: string): string[][] {
 	if (typeof tsv !== 'string') {
 		throw new TypeError(`Expected string, got ${typeof tsv}`);
 	}
@@ -26,8 +26,9 @@ export function tsv2json(tsv: any): string[][] {
 	let isInsideQuotes = false;
 
 	function commitCell() {
-		const str = currentlyBuildingString.replace(new RegExp(DOUBLE_COMMA_REPLACEMENT, 'g'), '"');
-		currentlyBuildingRow.push(str);
+		currentlyBuildingRow.push(
+			currentlyBuildingString.replace(new RegExp(DOUBLE_COMMA_REPLACEMENT, 'g'), '"')
+		);
 		currentlyBuildingString = '';
 	}
 
