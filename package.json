@@ -48,6 +48,8 @@
 	},
 	"xo": {
 		"rules": {
+			"no-lonely-if": "off",
+			"curly": "off",
 			"linebreak-style": [
 				"error",
 				"unix"
@@ -56,6 +58,14 @@
 				"error",
 				"always"
 			]
-		}
+		},
+		"overrides": [
+			{
+				"files": "**/*.ts",
+				"rules": {
+					"@typescript-eslint/no-explicit-any": "error"
+				}
+			}
+		]
 	}
 }
