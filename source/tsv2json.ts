@@ -24,10 +24,11 @@ function extractFirstCell(tsvCharacters: NonemptyArray<string>): CellExtractionR
 
 	while (index < tsvCharacters.length) {
 		const char = tsvCharacters[index];
+		const nextChar = tsvCharacters[index + 1];
 
 		if (escapedMode) {
 			if (char === '"') {
-				if (tsvCharacters[index + 1] === '"') {
+				if (nextChar === '"') {
 					result.push('"');
 					index++;
 				} else {
@@ -37,6 +38,11 @@ function extractFirstCell(tsvCharacters: NonemptyArray<string>): CellExtractionR
 				result.push(char);
 			}
 		} else {
+			if (char === '\r' && nextChar === '\n') {
+				index++;
+				return done(true);
+			}
+
 			if (char === '\n') return done(true);
 			if (char === '\t') return done(false);
 			result.push(char);

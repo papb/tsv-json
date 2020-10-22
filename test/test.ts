@@ -44,6 +44,9 @@ test('tsv2json', t => {
 	const complexJsonWithPreparedEmptyRow = complexJson.map(x => x.length === 0 ? [''] : x);
 	t.deepEqual(tsv2json(complexFullyQuotedTsv), complexJsonWithPreparedEmptyRow);
 	t.deepEqual(tsv2json(complexQuotedAsNeededTsv), complexJsonWithPreparedEmptyRow);
+
+	t.deepEqual(tsv2json('"aa\r\nbb"'), [['aa\r\nbb']]);
+	t.deepEqual(tsv2json('aa\r\nbb'), [['aa'], ['bb']]);
 });
 
 test('tsv2json throws on invalid input', t => {
