@@ -1,60 +1,70 @@
-function getInexistentSubstring(string: string): string {
-	const chunk = '§¬¢£#';
-	let result = `!${chunk}!`;
+type NonemptyArray<T> = [T, ...T[]];
+type CellExtractionResult = { cell: string; lineIsOver: boolean };
 
-	while (string.includes(result)) {
-		result = `${result}${chunk}!`;
+/**
+ * Modifies the given array, removing the extracted prefix.
+ *
+ * Assumes the array is nonempty.
+ *
+ * Here's how it works:
+ * If a cell does not start with ", it is a 'raw' cell and everything is read verbatim until a \t or \n is found, which ends the cell.
+ * If a cell starts with ", it starts in 'escaped' mode, ignoring this first ". In escaped mode, \t and \n are treated as normal characters. Once another " is found, unless it is not a "", the escaped mode is over (but the cell isn't necessarily over yet - it will be over on the next \t or \n).
+ * If the full tsv data finishes with a cell in escaped mode, then that cell is over.
+ */
+function extractFirstCell(tsvCharacters: NonemptyArray<string>): CellExtractionResult {
+	const result: string[] = [];
+
+	let escapedMode = tsvCharacters[0] === '"';
+	let index = escapedMode ? 1 : 0;
+
+	function done(lineIsOver: boolean) {
+		tsvCharacters.splice(0, index + 1);
+		return { cell: result.join(''), lineIsOver };
 	}
 
-	return result;
+	while (index < tsvCharacters.length) {
+		const char = tsvCharacters[index];
+
+		if (escapedMode) {
+			if (char === '"') {
+				if (tsvCharacters[index + 1] === '"') {
+					result.push('"');
+					index++;
+				} else {
+					escapedMode = false;
+				}
+			} else {
+				result.push(char);
+			}
+		} else {
+			if (char === '\n') return done(true);
+			if (char === '\t') return done(false);
+			result.push(char);
+		}
+
+		index++;
+	}
+
+	return done(true);
 }
 
 export function tsv2json(tsv: string): string[][] {
-	if (typeof tsv !== 'string') {
-		throw new TypeError(`Expected string, got ${typeof tsv}`);
-	}
+	if (typeof tsv !== 'string') throw new TypeError(`Expected string, got ${typeof tsv}`);
+	if (tsv === '') return [[]];
 
-	tsv = tsv.trim().replace(/\r\n/g, '\n');
-	const DOUBLE_COMMA_REPLACEMENT = getInexistentSubstring(tsv);
-	tsv = tsv.replace(/""/g, DOUBLE_COMMA_REPLACEMENT);
+	const characters = [...tsv]; // Account for surrogate pairs
 
-	const reg = /\n|"|\t|[^\n\t"]+/g;
+	const result: string[][] = [];
+	let currentRow: string[] = [];
 
-	const result = [];
-	let currentlyBuildingString = '';
-	let currentlyBuildingRow = [];
-	let isInsideQuotes = false;
-
-	function commitCell() {
-		currentlyBuildingRow.push(
-			currentlyBuildingString.replace(new RegExp(DOUBLE_COMMA_REPLACEMENT, 'g'), '"')
-		);
-		currentlyBuildingString = '';
-	}
-
-	function commitRow() {
-		commitCell();
-		result.push(currentlyBuildingRow);
-		currentlyBuildingRow = [];
-	}
-
-	let execResult: RegExpExecArray;
-	// eslint-disable-next-line no-cond-assign
-	while (execResult = reg.exec(tsv)) {
-		if (execResult[0] === '"') {
-			isInsideQuotes = !isInsideQuotes;
-		} else if (isInsideQuotes) {
-			currentlyBuildingString += execResult[0];
-		} else if (execResult[0] === '\t') {
-			commitCell();
-		} else if (execResult[0] === '\n') {
-			commitRow();
-		} else {
-			currentlyBuildingString += execResult[0];
+	while (characters.length > 0) {
+		const { cell, lineIsOver } = extractFirstCell(characters as NonemptyArray<string>);
+		currentRow.push(cell);
+		if (lineIsOver) {
+			result.push(currentRow);
+			currentRow = [];
 		}
 	}
-
-	commitRow();
 
 	return result;
 }
